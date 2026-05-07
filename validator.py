@@ -54,12 +54,15 @@ def validar_archivo(df):
     # 🔥 CONVERSIÓN DE MONTOS (UNA SOLA VEZ)
     for col in ["Monto bruto venta", "Monto neto", "Impuestos"]:
         if col in df.columns:
+
             df[col] = (
                 df[col]
                 .astype(str)
                 .str.replace(".", "", regex=False)
                 .str.replace(",", ".", regex=False)
+                .replace(["", "nan", "None"], pd.NA)
             )
+
             df[col] = pd.to_numeric(df[col], errors="coerce")
 
     # 🔁 VALIDACIÓN INTELIGENTE (VECTORIAL)
@@ -68,33 +71,64 @@ def validar_archivo(df):
         count = df.groupby("ID de venta")["ID de venta"].transform("count")
 
         if "ID de pago" in df.columns:
-            pagos_unicos = df.groupby("ID de venta")["ID de pago"].transform("nunique")
 
-            mask_pago_dup = (count > 1) & (pagos_unicos != count)
+            pagos_unicos = (
+                df.groupby("ID de venta")["ID de pago"]
+                .transform("nunique")
+            )
+
+            mask_pago_dup = (
+                (count > 1) &
+                (pagos_unicos != count)
+            )
 
             df.loc[mask_pago_dup, "estado"] = "ERROR"
-            df.loc[mask_pago_dup, "detalle_error"] += "ID de pago duplicado en misma venta; "
+            df.loc[mask_pago_dup, "detalle_error"] += (
+                "ID de pago duplicado en misma venta; "
+            )
 
         if "Monto bruto venta" in df.columns:
-            suma = df.groupby("ID de venta")["Monto bruto venta"].transform("sum")
-            referencia = df.groupby("ID de venta")["Monto bruto venta"].transform("first")
 
-            mask_monto = (count > 1) & (abs(suma - referencia) > 1)
+            suma = (
+                df.groupby("ID de venta")["Monto bruto venta"]
+                .transform("sum")
+            )
+
+            referencia = (
+                df.groupby("ID de venta")["Monto bruto venta"]
+                .transform("first")
+            )
+
+            mask_monto = (
+                (count > 1) &
+                (abs(suma - referencia) > 1)
+            )
 
             df.loc[mask_monto, "estado"] = "ERROR"
-            df.loc[mask_monto, "detalle_error"] += "Descuadre en montos por ID de venta; "
+            df.loc[mask_monto, "detalle_error"] += (
+                "Descuadre en montos por ID de venta; "
+            )
 
     # 📅 Fecha
     if "Fecha" in df.columns:
-        mask_fecha = pd.to_datetime(df["Fecha"], errors="coerce").isna()
+
+        mask_fecha = (
+            pd.to_datetime(df["Fecha"], errors="coerce")
+            .isna()
+        )
+
         df.loc[mask_fecha, "estado"] = "ERROR"
         df.loc[mask_fecha, "detalle_error"] += "Fecha inválida; "
 
     # 💰 Monto inválido
     if "Monto bruto venta" in df.columns:
+
         mask_importe = df["Monto bruto venta"].isna()
+
         df.loc[mask_importe, "estado"] = "ERROR"
-        df.loc[mask_importe, "detalle_error"] += "Monto inválido; "
+        df.loc[mask_importe, "detalle_error"] += (
+            "Monto bruto inválido o vacío; "
+        )
 
     # 🔥 Normalización listas
     tipos_pago_validos = normalizar_lista(TIPOS_PAGO_VALIDOS)
@@ -103,7 +137,13 @@ def validar_archivo(df):
 
     # 💳 Tipo de pago
     if "Tipo de pago" in df.columns:
-        df["Tipo de pago"] = df["Tipo de pago"].astype(str).str.strip().str.upper()
+
+        df["Tipo de pago"] = (
+            df["Tipo de pago"]
+            .astype(str)
+            .str.strip()
+            .str.upper()
+        )
 
         mask_pago = (
             df["Tipo de pago"].notna() &
@@ -112,14 +152,27 @@ def validar_archivo(df):
         )
 
         df.loc[mask_pago, "estado"] = "ERROR"
-        df.loc[mask_pago, "detalle_error"] += "Tipo de pago inválido; "
+        df.loc[mask_pago, "detalle_error"] += (
+            "Tipo de pago inválido; "
+        )
 
     # 💳 Marca de tarjeta
-    if "Marca de tarjeta" in df.columns and "Tipo de pago" in df.columns:
+    if (
+        "Marca de tarjeta" in df.columns and
+        "Tipo de pago" in df.columns
+    ):
 
-        df["Marca de tarjeta"] = df["Marca de tarjeta"].astype(str).str.strip().str.upper()
+        df["Marca de tarjeta"] = (
+            df["Marca de tarjeta"]
+            .astype(str)
+            .str.strip()
+            .str.upper()
+        )
 
-        mask_aplica = df["Tipo de pago"].isin(["CREDIT", "DEBIT"])
+        mask_aplica = (
+            df["Tipo de pago"]
+            .isin(["CREDIT", "DEBIT"])
+        )
 
         mask_brand = (
             mask_aplica &
@@ -129,11 +182,19 @@ def validar_archivo(df):
         )
 
         df.loc[mask_brand, "estado"] = "ERROR"
-        df.loc[mask_brand, "detalle_error"] += "Marca de tarjeta inválida; "
+        df.loc[mask_brand, "detalle_error"] += (
+            "Marca de tarjeta inválida; "
+        )
 
     # 🌐 Platform code
     if "Codigo Plataforma Externa" in df.columns:
-        df["Codigo Plataforma Externa"] = df["Codigo Plataforma Externa"].astype(str).str.strip().str.upper()
+
+        df["Codigo Plataforma Externa"] = (
+            df["Codigo Plataforma Externa"]
+            .astype(str)
+            .str.strip()
+            .str.upper()
+        )
 
         mask_platform = (
             df["Codigo Plataforma Externa"].notna() &
@@ -142,18 +203,53 @@ def validar_archivo(df):
         )
 
         df.loc[mask_platform, "estado"] = "ERROR"
-        df.loc[mask_platform, "detalle_error"] += "Platform code inválido; "
+        df.loc[mask_platform, "detalle_error"] += (
+            "Platform code inválido; "
+        )
 
-    # 🧮 Validación contable
-    if all(col in df.columns for col in ["Monto neto", "Impuestos", "Monto bruto venta"]):
+    # 🧮 VALIDACIÓN CONTABLE MEJORADA
+    if all(
+        col in df.columns
+        for col in ["Monto neto", "Impuestos", "Monto bruto venta"]
+    ):
 
         neto = df["Monto neto"]
         impuestos = df["Impuestos"]
         bruto = df["Monto bruto venta"]
 
-        mask_mismatch = abs((neto + impuestos) - bruto) > 1
+        # 🔴 Valores vacíos
+        mask_vacios = (
+            neto.isna() |
+            impuestos.isna() |
+            bruto.isna()
+        )
+
+        df.loc[mask_vacios, "estado"] = "ERROR"
+        df.loc[mask_vacios, "detalle_error"] += (
+            "Monto neto, impuestos o bruto vacío; "
+        )
+
+        # 🔴 Si impuestos = 0 → neto debe ser igual a bruto
+        mask_sin_impuestos = (
+            (~mask_vacios) &
+            (impuestos == 0) &
+            (abs(neto - bruto) > 1)
+        )
+
+        df.loc[mask_sin_impuestos, "estado"] = "ERROR"
+        df.loc[mask_sin_impuestos, "detalle_error"] += (
+            "Si impuestos es 0, neto debe ser igual al bruto; "
+        )
+
+        # 🔴 Validación estándar
+        mask_mismatch = (
+            (~mask_vacios) &
+            (abs((neto + impuestos) - bruto) > 1)
+        )
 
         df.loc[mask_mismatch, "estado"] = "ERROR"
-        df.loc[mask_mismatch, "detalle_error"] += "Descuadre: Neto + Impuestos ≠ Bruto; "
+        df.loc[mask_mismatch, "detalle_error"] += (
+            "Descuadre: Neto + Impuestos ≠ Bruto; "
+        )
 
     return df, errores, warnings
