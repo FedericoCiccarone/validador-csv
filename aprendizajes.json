@@ -1,0 +1,7 @@
+{
+    "Tipo de pago": {
+        "DEBITO": "DEBIT",
+        "CRREDITO": "CREDIT",
+        "DEBIT": "DEBIT"
+    }
+}
