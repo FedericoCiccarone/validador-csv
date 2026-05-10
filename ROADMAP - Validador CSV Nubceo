@@ -1,0 +1,68 @@
+========================================
+ PRÓXIMAS FUNCIONALIDADES
+========================================
+
+[REALIZADO 10-05-2026 ] Correcciones automáticas y masivas
+- Corrección automática de tipos de pago
+- Corrección automática de marcas de tarjeta
+- Normalización automática de fechas
+- Corrección automática de formatos inválidos
+- Aplicación masiva de correcciones
+
+[ ] Historial de importaciones
+- Fecha de procesamiento
+- Usuario
+- Archivo procesado
+- Cantidad de errores
+- Perfil utilizado
+
+[ ] Mejoras de performance
+- Optimización para archivos grandes
+- Procesamiento paralelo
+- Menor uso de memoria
+- Validación incremental
+
+[ ] Mejoras de interfaz
+- Pantalla de inicio
+- Modo oscuro
+- Filtros de errores
+- Buscador
+- Navegación más rápida
+
+
+[ ] Seguridad y control
+- Logs de validación
+- Registro de cambios
+- Auditoría de correcciones
+- Backup automático
+
+[ ] Integraciones futuras
+- Lectura automática desde carpetas
+- Automatización de procesamiento
+
+
+[ ] Publicación web / Integración Nubceo
+- Publicar la aplicación en entorno web
+- Acceso desde navegador sin instalación local
+- Hosting centralizado
+- Gestión multiusuario
+- Acceso remoto para clientes
+- Integración directa dentro de Nubceo
+- Validación previa antes de importar
+- Integración con módulos de conciliación
+- Posibilidad de importar/exportar directamente desde Nubceo
+- Autenticación de usuarios
+- Gestión de permisos
+
+========================================
+📌 ESTADO ACTUAL
+========================================
+
+Versión actual:
+v2.0.0
+
+Estado:
+✅ Operativo
+✅ Publicado en GitHub
+✅ Versionado
+✅ Testing interno realizado
