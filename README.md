@@ -50,29 +50,42 @@ Y sugiere:
 
 Impuestos = 0
 
+con confirmación del usuario.
+
+📂 Perfiles de importación
+
+Permite:
+
+Guardar perfiles de mapeo
+Reutilizar perfiles
+Automatizar cargas repetitivas
+📤 Exportador Nubceo
+
+La aplicación exporta:
+
+✅ CSV Nubceo
+UTF-8
+Separado por ;
+Orden exacto requerido por Nubceo
+Sin columnas internas
+✅ Excel de validación
+Resultado completo
+Hoja de errores
+
 ```text
----
-
-# 🚀 Instalación
-
-## 1️⃣ Descargar el proyecto
+🚀 Instalación
+1️⃣ Descargar proyecto
 
 Descargar el ZIP desde GitHub y descomprimirlo.
 
----
+2️⃣ Instalar dependencias
 
-## 2️⃣ Ejecutar instalación
+Ejecutar:
 
-Hacer doble click en:
-
-```bash
 instalar.bat
-
-Esto instalará automáticamente todas las librerías necesarias.
-
 3️⃣ Iniciar aplicación
 
-Hacer doble click en:
+Ejecutar:
 
 iniciar.bat
 
@@ -82,14 +95,23 @@ La aplicación abrirá automáticamente en el navegador.
 CSV
 Separador ;
 UTF-8
+⚠️ Importante
 
-⚠️ La aplicación detecta archivos Latin-1 e informa al usuario.
+La aplicación:
 
-🛠️ Tecnologías utilizadas
-Python
-Pandas
-Streamlit
-OpenPyXL
-
+Detecta archivos Latin-1
+Corrige estructuras inválidas
+Permite crear columnas faltantes
+Mantiene el layout oficial Nubceo
+🛣️ Roadmap
+Próximas mejoras
+Smart Fix de fechas
+Smart Fix de monedas
+Reglas automáticas avanzadas
+Publicación web
+Integración directa con Nubceo
+Historial de correcciones
+Dashboard de validaciones
 👨‍💻 Autor
+
 Federico Ciccarone
