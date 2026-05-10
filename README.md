@@ -47,9 +47,10 @@ La aplicación detecta automáticamente:
 - Impuestos vacío
 
 Y sugiere:
-```text
+
 Impuestos = 0
 
+```text
 ---
 
 # 🚀 Instalación
