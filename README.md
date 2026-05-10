@@ -1,61 +1,54 @@
 # 🧾 Validador CSV - Nubceo
 
-Aplicación para validar, corregir y normalizar archivos CSV de ventas antes de cargarlos en Nubceo.
+Aplicación inteligente para validar, normalizar y preparar archivos CSV de ventas antes de cargarlos en Nubceo.
 
 ---
 
-# ✅ Funcionalidades
+# 🚀 Funcionalidades
 
-## 🔎 Validaciones automáticas
-
-- Validación estructural de archivos CSV
-- Validación de:
-  - montos
-  - fechas
-  - tipos de pago
-  - marcas de tarjeta
-  - platform codes
-- Validación contable:
-  - Neto + Impuestos = Bruto
-- Validación de pagos múltiples por venta
-- Validación de IDs de pago duplicados
-- Detección de inconsistencias
-
----
-
-# 🧠 Funcionalidades inteligentes
-
+## ✅ Validación estructural
+- Validación de columnas obligatorias
+- Validación de columnas esperadas
+- Detección de columnas faltantes
 - Mapeo inteligente de columnas
-- Auto sugerencia de columnas similares
-- Creación automática de columnas faltantes
-- Reordenamiento automático de layout Nubceo
-- Eliminación automática de columnas basura (`Unnamed`)
-- Normalización automática de layouts
 
 ---
 
-# ✏️ Corrección integrada
-
-- Corrección manual dentro de la app
-- Revalidación automática
-- Exportación de CSV corregido listo para Nubceo
-
----
-
-# 📂 Perfiles de importación
-
-- Guardado de perfiles reutilizables
-- Aplicación automática de mapeos frecuentes
+# ✅ Validaciones de negocio
+- Validación de montos
+- Validación de fechas
+- Validación de tipos de pago
+- Validación de marcas de tarjeta
+- Validación de platform codes
+- Validación contable
+- Validación de pagos múltiples
 
 ---
 
-# 📊 Resultados y reportes
+# 🧠 Smart Fix Inteligente
+La aplicación detecta errores y permite:
 
-- Exportación a Excel
-- Hoja completa
-- Hoja de errores
-- Resumen de validación
-- Sugerencia automática de reglas de conciliación
+- Corregir valores inválidos
+- Aplicar correcciones masivas
+- Aprender sugerencias anteriores
+- Reutilizar sugerencias futuras
+
+Actualmente soporta:
+- Tipo de pago
+- Marca de tarjeta
+- Correcciones contables
+
+---
+
+# 🧮 Smart Fix Contable
+La aplicación detecta automáticamente:
+
+- Neto = Bruto
+- Impuestos vacío
+
+Y sugiere:
+```text
+Impuestos = 0
 
 ---
 
