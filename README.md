@@ -1,84 +1,91 @@
 # 🧾 Validador CSV - Nubceo
 
-Aplicación para validar, corregir y normalizar archivos CSV de ventas antes de cargarlos en Nubceo.
+Aplicación inteligente para validar, normalizar y preparar archivos CSV de ventas antes de cargarlos en Nubceo.
 
 ---
 
-# ✅ Funcionalidades
+# 🚀 Funcionalidades
 
-## 🔎 Validaciones automáticas
-
-- Validación estructural de archivos CSV
-- Validación de:
-  - montos
-  - fechas
-  - tipos de pago
-  - marcas de tarjeta
-  - platform codes
-- Validación contable:
-  - Neto + Impuestos = Bruto
-- Validación de pagos múltiples por venta
-- Validación de IDs de pago duplicados
-- Detección de inconsistencias
-
----
-
-# 🧠 Funcionalidades inteligentes
-
+## ✅ Validación estructural
+- Validación de columnas obligatorias
+- Validación de columnas esperadas
+- Detección de columnas faltantes
 - Mapeo inteligente de columnas
-- Auto sugerencia de columnas similares
-- Creación automática de columnas faltantes
-- Reordenamiento automático de layout Nubceo
-- Eliminación automática de columnas basura (`Unnamed`)
-- Normalización automática de layouts
 
 ---
 
-# ✏️ Corrección integrada
-
-- Corrección manual dentro de la app
-- Revalidación automática
-- Exportación de CSV corregido listo para Nubceo
-
----
-
-# 📂 Perfiles de importación
-
-- Guardado de perfiles reutilizables
-- Aplicación automática de mapeos frecuentes
+# ✅ Validaciones de negocio
+- Validación de montos
+- Validación de fechas
+- Validación de tipos de pago
+- Validación de marcas de tarjeta
+- Validación de platform codes
+- Validación contable
+- Validación de pagos múltiples
 
 ---
 
-# 📊 Resultados y reportes
+# 🧠 Smart Fix Inteligente
+La aplicación detecta errores y permite:
 
-- Exportación a Excel
-- Hoja completa
-- Hoja de errores
-- Resumen de validación
-- Sugerencia automática de reglas de conciliación
+- Corregir valores inválidos
+- Aplicar correcciones masivas
+- Aprender sugerencias anteriores
+- Reutilizar sugerencias futuras
+
+Actualmente soporta:
+- Tipo de pago
+- Marca de tarjeta
+- Correcciones contables
 
 ---
 
-# 🚀 Instalación
+# 🧮 Smart Fix Contable
+La aplicación detecta automáticamente:
 
-## 1️⃣ Descargar el proyecto
+- Neto = Bruto
+- Impuestos vacío
+
+Y sugiere:
+
+Impuestos = 0
+
+con confirmación del usuario.
+
+📂 Perfiles de importación
+
+Permite:
+
+Guardar perfiles de mapeo
+Reutilizar perfiles
+Automatizar cargas repetitivas
+📤 Exportador Nubceo
+
+La aplicación exporta:
+
+✅ CSV Nubceo
+UTF-8
+Separado por ;
+Orden exacto requerido por Nubceo
+Sin columnas internas
+✅ Excel de validación
+Resultado completo
+Hoja de errores
+
+```text
+🚀 Instalación
+1️⃣ Descargar proyecto
 
 Descargar el ZIP desde GitHub y descomprimirlo.
 
----
+2️⃣ Instalar dependencias
 
-## 2️⃣ Ejecutar instalación
+Ejecutar:
 
-Hacer doble click en:
-
-```bash
 instalar.bat
-
-Esto instalará automáticamente todas las librerías necesarias.
-
 3️⃣ Iniciar aplicación
 
-Hacer doble click en:
+Ejecutar:
 
 iniciar.bat
 
@@ -88,14 +95,23 @@ La aplicación abrirá automáticamente en el navegador.
 CSV
 Separador ;
 UTF-8
+⚠️ Importante
 
-⚠️ La aplicación detecta archivos Latin-1 e informa al usuario.
+La aplicación:
 
-🛠️ Tecnologías utilizadas
-Python
-Pandas
-Streamlit
-OpenPyXL
-
+Detecta archivos Latin-1
+Corrige estructuras inválidas
+Permite crear columnas faltantes
+Mantiene el layout oficial Nubceo
+🛣️ Roadmap
+Próximas mejoras
+Smart Fix de fechas
+Smart Fix de monedas
+Reglas automáticas avanzadas
+Publicación web
+Integración directa con Nubceo
+Historial de correcciones
+Dashboard de validaciones
 👨‍💻 Autor
+
 Federico Ciccarone
