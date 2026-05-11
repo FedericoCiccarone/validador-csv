@@ -64,6 +64,12 @@ def detectar_valores_invalidos(
 
         return []
 
+    # 🔥 normalizar válidos
+    valores_validos = set(
+        str(x).strip().upper()
+        for x in valores_validos
+    )
+
     # 🔥 eliminar nulos reales
     serie = df[columna].dropna()
 
@@ -80,7 +86,7 @@ def detectar_valores_invalidos(
         serie != ""
     ]
 
-    # 🔥 obtener inválidos
+    # 🔥 obtener inválidos reales
     invalidos = serie[
         ~serie.isin(valores_validos)
     ].unique()
@@ -106,13 +112,18 @@ def aplicar_correccion(
 
     if aplicar_masivo:
 
-        df[columna] = (
+        mask = (
             df[columna]
-            .replace(
-                valor_original,
-                nuevo_valor
-            )
+            .astype(str)
+            .str.upper()
+            .str.strip()
+            == str(valor_original).upper().strip()
         )
+
+        df.loc[
+            mask,
+            columna
+        ] = nuevo_valor
 
     else:
 
@@ -120,7 +131,8 @@ def aplicar_correccion(
             df[columna]
             .astype(str)
             .str.upper()
-            == str(valor_original).upper()
+            .str.strip()
+            == str(valor_original).upper().strip()
         )
 
         if mask.any():

@@ -111,7 +111,8 @@ def validar_archivo(df):
     for col in [
         "Monto bruto venta",
         "Monto neto",
-        "Impuestos"
+        "Impuestos",
+        "Monto bruto pago"
     ]:
 
         if col in df.columns:
@@ -179,26 +180,35 @@ def validar_archivo(df):
             )
 
         # =============================
-        # 💰 VALIDAR MONTOS
+        # 💰 VALIDAR MONTOS MULTIPAGO
         # =============================
 
-        if "Monto bruto venta" in df.columns:
+        if all(col in df.columns for col in [
+            "Monto bruto venta",
+            "Monto bruto pago"
+        ]):
 
-            suma = (
-                df.groupby("ID de venta")
-                ["Monto bruto venta"]
+            suma_pagos = (
+                df.groupby("ID de venta")[
+                    "Monto bruto pago"
+                ]
                 .transform("sum")
             )
 
-            referencia = (
-                df.groupby("ID de venta")
-                ["Monto bruto venta"]
+            referencia_venta = (
+                df.groupby("ID de venta")[
+                    "Monto bruto venta"
+                ]
                 .transform("first")
             )
 
             mask_monto = (
                 (count > 1) &
-                (abs(suma - referencia) > 1)
+                (
+                    abs(
+                        suma_pagos - referencia_venta
+                    ) > 1
+                )
             )
 
             df.loc[
