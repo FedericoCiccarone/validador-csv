@@ -22,7 +22,11 @@ Aplicación inteligente para validar, normalizar y preparar archivos CSV de vent
 - Validación de platform codes
 - Validación contable
 - Validación de pagos múltiples
-
+- Validación obligatoria de CUIT
+- Validación exacta del campo Tipo
+- Compatibilidad con reglas Nubceo
+- Validación multipago avanzada
+- 
 ---
 
 # 🧠 Smart Fix Inteligente
@@ -32,6 +36,8 @@ La aplicación detecta errores y permite:
 - Aplicar correcciones masivas
 - Aprender sugerencias anteriores
 - Reutilizar sugerencias futuras
+- Eliminación de falsos positivos
+- Normalización inteligente
 
 Actualmente soporta:
 - Tipo de pago
