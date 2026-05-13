@@ -615,7 +615,10 @@ if "df_validado" in st.session_state:
         invalidos_pago = detectar_valores_invalidos(
             df_validado,
             "Tipo de pago",
-            set(TIPOS_PAGO_VALIDOS)
+            set(
+                x.upper().strip()
+                 for x in TIPOS_PAGO_VALIDOS
+            )
         )
 
         for i, invalido in enumerate(
@@ -683,7 +686,10 @@ if "df_validado" in st.session_state:
         invalidos_brand = detectar_valores_invalidos(
             df_validado,
             "Marca de tarjeta",
-            set(CARD_BRANDS_VALIDOS)
+            set(
+                 x.upper().strip()
+                 for x in CARD_BRANDS_VALIDOS
+            )
         )
 
         for i, invalido in enumerate(
@@ -970,7 +976,12 @@ if "df_validado" in st.session_state:
                 sheet_name="Errores"
             )
 
-        st.download_button(
+        st.markdown("---")
+        st.subheader("📥 Barra de descargas")
+
+        col_xlsx, col_csv = st.columns(2)
+
+        col_xlsx.download_button(
             "📥 Descargar Excel",
             output.getvalue(),
             "resultado_validado.xlsx",
@@ -987,9 +998,13 @@ if "df_validado" in st.session_state:
             encoding="utf-8-sig"
         )
 
-        st.download_button(
+        col_csv.download_button(
             "📤 Descargar CSV Nubceo",
              csv,
              "nubceo_import.csv",
              "text/csv"
+        )
+
+        st.info(
+            "Si no ves los botones, baja hasta esta barra de descargas o recarga la página para forzar el renderizado."
         )

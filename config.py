@@ -131,3 +131,10 @@ TIPOS_PAGO_VALIDOS = [
     "qr",
     "wallet"
 ]
+
+TIPOS_DOCUMENTO_VALIDOS = [
+    "invoice",
+    "creditNote",
+    "chargeback",
+    "adjustment"
+]

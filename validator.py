@@ -4,7 +4,8 @@ from config import (
     COLUMNAS_ESPERADAS,
     CARD_BRANDS_VALIDOS,
     PLATFORM_CODES_VALIDOS,
-    TIPOS_PAGO_VALIDOS
+    TIPOS_PAGO_VALIDOS,
+    TIPOS_DOCUMENTO_VALIDOS
 )
 
 # 🔥 NORMALIZADOR GLOBAL
@@ -224,6 +225,38 @@ def validar_archivo(df):
             )
 
     # =============================
+    # 🧾 VALIDAR CUIT
+    # =============================
+
+    if "CUIT" in df.columns:
+
+        cuit = (
+            df["CUIT"]
+            .astype(str)
+            .str.strip()
+        )
+
+        mask_cuit = (
+            cuit.isna() |
+            cuit.isin([
+                "",
+                "nan",
+                "None"
+            ])
+        )
+
+        df.loc[
+            mask_cuit,
+            "estado"
+        ] = "ERROR"
+
+        df.loc[
+            mask_cuit,
+            "detalle_error"
+        ] += "CUIT vacío; "
+
+    
+    # =============================
     # 📅 VALIDAR FECHA
     # =============================
 
@@ -285,6 +318,38 @@ def validar_archivo(df):
     platform_validos = normalizar_lista(
         PLATFORM_CODES_VALIDOS
     )
+
+    # =============================
+    # 📄 VALIDAR TIPO
+    # =============================
+
+    if "Tipo" in df.columns:
+
+        tipos_validos = set(
+            TIPOS_DOCUMENTO_VALIDOS
+        )
+
+        tipo = (
+            df["Tipo"]
+            .astype(str)
+            .str.strip()
+        )
+
+        mask_tipo = (
+            ~tipo.isin(
+                tipos_validos
+            )
+        )
+
+        df.loc[
+            mask_tipo,
+            "estado"
+        ] = "ERROR"
+
+        df.loc[
+            mask_tipo,
+            "detalle_error"
+        ] += "Tipo inválido; "
 
     # =============================
     # 💳 TIPO DE PAGO
