@@ -71,7 +71,7 @@ def detectar_valores_invalidos(
     )
 
     # 🔥 eliminar nulos reales
-    serie = df[columna].dropna()
+    serie = df[columna].fillna("")
 
     # 🔥 normalizar valores
     serie = (

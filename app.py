@@ -24,7 +24,8 @@ from config import (
     COLUMNAS_OBLIGATORIAS,
     COLUMNAS_ESPERADAS,
     TIPOS_PAGO_VALIDOS,
-    CARD_BRANDS_VALIDOS
+    CARD_BRANDS_VALIDOS,
+    PLATFORM_CODES_VALIDOS
 )
 
 st.title("🧾 Validador de Ventas - Nubceo")
@@ -667,6 +668,86 @@ if "df_validado" in st.session_state:
 
                 guardar_sugerencia(
                     "Tipo de pago",
+                    invalido,
+                    nuevo_valor
+                )
+
+                st.session_state[
+                    "df_validado"
+                ] = df_validado
+
+                st.success(
+                    f"✅ Corrección aplicada: {invalido} → {nuevo_valor}"
+                )
+
+        # =============================
+        # 🧠 SMART FIX PLATFORM CODE
+        # =============================
+
+        invalidos_platform = detectar_valores_invalidos(
+            df_validado,
+            "Codigo Plataforma Externa",
+            PLATFORM_CODES_VALIDOS
+        )
+
+        for i, invalido in enumerate(
+            invalidos_platform
+        ):
+
+            st.warning(
+                f"⚠️ Platform code inválido detectado: {invalido}"
+            )
+
+            sugerencia = obtener_sugerencia(
+                "Codigo Plataforma Externa",
+                invalido
+            )
+
+            opciones_platform = [
+                "",
+            ] + PLATFORM_CODES_VALIDOS
+
+            default_index = 0
+
+            if (
+                sugerencia
+                and sugerencia in opciones_platform
+            ):
+
+                default_index = (
+                    opciones_platform.index(
+                        sugerencia
+                    )
+                )
+
+            nuevo_valor = st.selectbox(
+                f"Nuevo valor para '{invalido}'",
+                opciones_platform,
+                index=default_index,
+                key=f"smartfix_platform_{i}"
+            )
+
+            aplicar_masivo = st.checkbox(
+                f"Aplicar a todos los '{invalido}'",
+                value=True,
+                key=f"masivo_platform_{i}"
+            )
+
+            if st.button(
+                f"✅ Corregir platform '{invalido}'",
+                key=f"btn_platform_{i}"
+            ):
+
+                df_validado = aplicar_correccion(
+                    df_validado,
+                    "Codigo Plataforma Externa",
+                    invalido,
+                    nuevo_valor,
+                    aplicar_masivo
+                )
+
+                guardar_sugerencia(
+                    "Codigo Plataforma Externa",
                     invalido,
                     nuevo_valor
                 )

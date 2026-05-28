@@ -1,7 +1,5 @@
 {
-    "Tipo de pago": {
-        "DEBITO": "DEBIT",
-        "CRREDITO": "CREDIT",
-        "DEBIT": "DEBIT"
+    "Codigo Plataforma Externa": {
+        "PRISMA": "prisma_ar"
     }
 }
