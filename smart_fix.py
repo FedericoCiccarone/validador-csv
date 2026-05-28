@@ -83,7 +83,12 @@ def detectar_valores_invalidos(
 
     # 🔥 ignorar vacíos reales
     serie = serie[
-        serie != ""
+        ~serie.isin([
+            "",
+            "NAN",
+            "N/A",
+            "<NA>",
+        ])
     ]
 
     # 🔥 obtener inválidos reales

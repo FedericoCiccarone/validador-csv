@@ -458,19 +458,31 @@ def validar_archivo(df):
                 .iloc[:, 0]
             )
 
+        # 🔥 IMPORTANTE:
+        # Nubceo requiere lowercase exacto
+        # SOLO limpiamos espacios
+
         df["Codigo Plataforma Externa"] = (
             df["Codigo Plataforma Externa"]
             .astype(str)
             .str.strip()
-            .str.upper()
+        )
+
+        # 🔥 NO normalizar uppercase
+        platform_validos = set(
+            PLATFORM_CODES_VALIDOS
         )
 
         mask_platform = (
             df["Codigo Plataforma Externa"].notna() &
-            (df["Codigo Plataforma Externa"] != "") &
             (
-                ~df["Codigo Plataforma Externa"]
-                .isin(platform_validos)
+                df["Codigo Plataforma Externa"]
+                != ""
+            ) &
+            (
+                ~df[
+                    "Codigo Plataforma Externa"
+                ].isin(platform_validos)
             )
         )
 
