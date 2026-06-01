@@ -810,6 +810,53 @@ if "df_validado" in st.session_state:
 
         st.subheader("📊 Resumen")
 
+        # =============================
+        # 🧾 CANTIDAD DE VENTAS
+        # =============================
+
+        if "ID de venta" in df_validado.columns:
+
+            ventas = (
+                df_validado["ID de venta"]
+                .dropna()
+                .astype(str)
+                .str.strip()
+            )
+
+            ventas = (
+                ventas[
+                    ventas != ""
+                ]
+                .nunique()
+            )
+
+        else:
+
+            ventas = 0
+
+
+        # =============================
+        # ✅ FILAS CSV OK
+        # =============================
+
+        filas_ok = (
+            df_validado["estado"] == "OK"
+        ).sum()
+
+
+        # =============================
+        # ❌ ERRORES
+        # =============================
+
+        error = (
+            df_validado["estado"] == "ERROR"
+        ).sum()
+
+
+        # =============================
+        # 💰 PROMEDIO VENTA
+        # =============================
+
         df_validado[
             "Monto bruto venta"
         ] = pd.to_numeric(
@@ -819,27 +866,37 @@ if "df_validado" in st.session_state:
             errors="coerce"
         )
 
-        ok = (
-            df_validado["estado"] == "OK"
-        ).sum()
-
-        error = (
-            df_validado["estado"] == "ERROR"
-        ).sum()
 
         promedio = (
             df_validado[
                 "Monto bruto venta"
-            ].mean()
+            ]
+            .mean()
         )
 
-        col1, col2, col3 = st.columns(3)
 
-        col1.metric("✅ OK", ok)
+        col1, col2, col3, col4 = st.columns(4)
 
-        col2.metric("❌ Error", error)
+
+        col1.metric(
+            "🧾 Ventas",
+            ventas
+        )
+
+
+        col2.metric(
+            "📄 Filas CSV OK",
+            filas_ok
+        )
+
 
         col3.metric(
+            "❌ Error",
+            error
+        )
+
+
+        col4.metric(
             "📈 Promedio",
             f"${promedio:,.2f}"
         )
