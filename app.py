@@ -2,6 +2,13 @@ import sys
 import os
 import time
 import difflib
+import csv
+from io import StringIO
+
+
+# =============================
+# 🔎 VALIDAR ESTRUCTURA CSV
+# =============================
 
 def validar_estructura_csv(archivo):
 
@@ -9,55 +16,59 @@ def validar_estructura_csv(archivo):
 
     archivo.seek(0)
 
-    lineas = (
-        archivo
-        .getvalue()
-        .decode(
-            "utf-8",
-            errors="ignore"
-        )
-        .splitlines()
+    contenido = archivo.getvalue().decode(
+        "utf-8",
+        errors="ignore"
     )
 
-    if not lineas:
+    lector = csv.reader(
+        StringIO(contenido),
+        delimiter=";"
+    )
+
+    filas = list(lector)
+
+    if not filas:
+        archivo.seek(0)
         return errores
 
-    columnas_esperadas = (
-        len(
-            lineas[0].split(";")
-        )
-    )
+    columnas_esperadas = len(filas[0])
 
-    for numero, linea in enumerate(
-        lineas[1:],
+    for numero, fila in enumerate(
+        filas[1:],
         start=2
     ):
 
-        columnas_actuales = (
-            len(
-                linea.split(";")
-            )
-        )
+        columnas_actuales = len(fila)
 
         if columnas_actuales != columnas_esperadas:
 
             errores.append({
                 "fila": numero,
                 "detalle_error":
-                (
-                    "Estructura CSV inválida; "
-                    "cantidad incorrecta de columnas"
-                )
+                    (
+                        "Estructura CSV inválida; "
+                        f"se esperaban {columnas_esperadas} columnas "
+                        f"y se encontraron {columnas_actuales}"
+                    )
             })
 
     archivo.seek(0)
 
     return errores
 
-# 👇 IMPORTANTE PARA PORTABLE
-sys.path.append(os.path.join(os.path.dirname(__file__), "libs"))
 
+# 👇 IMPORTANTE PARA PORTABLE
+
+sys.path.append(
+    os.path.join(
+        os.path.dirname(__file__),
+        "libs"
+    )
+)
 import streamlit as st
+import pandas as pd
+from io import BytesIO
 import pandas as pd
 from io import BytesIO
 
@@ -96,6 +107,18 @@ archivo = st.file_uploader(
 
 if archivo:
 
+    # =============================
+    # 🧹 LIMPIAR ERRORES ANTERIORES
+    # =============================
+
+    if "error_estructura_csv" in st.session_state:
+
+        del st.session_state[
+            "error_estructura_csv"
+        ]
+
+
+
     if not archivo.name.endswith(".csv"):
 
         st.error(
@@ -122,7 +145,11 @@ if archivo:
             df = pd.read_csv(
                 archivo,
                 sep=";",
-                encoding="utf-8"
+                encoding="utf-8",
+                engine="python",
+                quoting=csv.QUOTE_NONE,
+                on_bad_lines="skip"
+
             )
 
         except UnicodeDecodeError:
@@ -134,7 +161,8 @@ if archivo:
                 sep=";",
                 encoding="latin-1",
                 engine="python",
-                on_bad_lines="error"
+                quoting=csv.QUOTE_NONE,
+                on_bad_lines="skip"
             )
 
             st.warning(
@@ -149,21 +177,15 @@ if archivo:
 
     except Exception as e:
 
-        archivo.seek(0)
-
-        df = pd.read_csv(
-            archivo,
-            sep=";",    
-            encoding="latin-1",
-            engine="python",
-            on_bad_lines="skip"
+        st.error(
+            "❌ No se pudo leer el CSV"
         )
 
-        st.session_state[
-            "error_estructura_csv"
-        ] = str(e)  
+        st.error(
+            str(e)
+        )
 
-
+        st.stop()
     # =============================
     # 🧹 LIMPIEZA COLUMNAS
     # =============================
@@ -171,14 +193,80 @@ if archivo:
     df.columns = (
         df.columns
         .astype(str)
+        .str.replace(
+            '"',
+            "",
+            regex=False
+        )
         .str.strip()
     )
+
+
+    for col in df.columns:
+
+        if df[col].dtype == "object":
+
+            df[col] = (
+                df[col]
+                .astype(str)
+
+                # 🔥 eliminar cualquier cantidad de comillas
+                .str.replace(
+                    '"',
+                    "",
+                    regex=False
+                )
+
+                # 🔥 limpiar espacios
+                .str.strip()
+            )
+
+
+            # 🔥 corregir campos que quedaron como comillas vacías
+            df[col] = (
+                df[col]
+                .replace(
+                    [
+                        "",
+                        "nan",
+                        "NaN",
+                        "None"
+                    ],
+                    ""
+                )
+            )
+
 
     # 🔥 eliminar columnas basura tipo Unnamed
     df = df.loc[
         :,
         ~df.columns.str.contains("^Unnamed")
     ]
+
+    # =============================
+    # 🧹 LIMPIEZA REAL CSV
+    # =============================
+    df.columns = [
+        str(col)
+        .replace('"', '')
+        .strip()
+
+        for col in df.columns
+    ]
+
+
+    for columna in df.columns:
+
+        df[columna] = (
+            df[columna]
+            .astype(str)
+            .str.replace(
+                '"',
+                '',
+                regex=False
+            )
+            .str.strip()
+        )
 
     st.subheader("📄 Vista previa")
 
@@ -497,10 +585,11 @@ if archivo:
                 chunks = pd.read_csv(
                     archivo,
                     sep=";",
-                    encoding="latin-1",
+                    encoding="utf-8",
                     engine="python",
+                    quoting=csv.QUOTE_NONE,
                     chunksize=50000,
-                    on_bad_lines="error"
+                    on_bad_lines="skip"
                 )
 
                 resultados = []
@@ -516,6 +605,7 @@ if archivo:
                     sep=";",
                     encoding="latin-1",
                     engine="python",
+                    quoting=csv.QUOTE_NONE,
                     chunksize=50000,
                     on_bad_lines="skip"
                 )
@@ -568,38 +658,60 @@ if archivo:
 
             else:
 
+                # =============================
+                # 🧹 LIMPIEZA FINAL CSV
+                # =============================
+                for col in df.columns:
+
+                    if df[col].dtype == "object":
+
+                        df[col] = (
+                            df[col]
+                            .map(
+                                lambda x:
+                                str(x)
+                                .replace(
+                                    '"',
+                                    ''
+                                )
+                                .strip()
+                                if pd.notna(x)
+                                else x
+                            )
+                        )
+
+
+                df.columns = (
+                    df.columns
+                    .astype(str)
+                    .str.replace(
+                        '"',
+                        '',
+                        regex=False
+                    )
+                    .str.strip()
+                )
+
+
+
+                df.columns = (
+                    df.columns
+                    .astype(str)
+                    .str.replace(
+                        '"',
+                        '',
+                        regex=False
+                    )
+                    .str.strip()
+                )
+
+
                 df_validado, errores, warnings = validar_archivo(
                     df
                 )
 
-                # =============================
-                # 🔥 AGREGAR ERRORES CSV
-                # =============================
 
-                if "error_estructura_csv" in st.session_state:
 
-                    nueva_fila = {
-                        col: ""
-                        for col in df_validado.columns
-                    }
-
-                    nueva_fila["estado"] = "ERROR"
-
-                    nueva_fila["detalle_error"] = (
-                         "Archivo CSV con estructura inválida; "
-                         "posible fila incompleta, comillas abiertas "
-                         "o separadores incorrectos"
-                    )
-
-                    df_validado = pd.concat(
-                        [
-                            df_validado,
-                            pd.DataFrame(
-                                [nueva_fila]
-                            )
-                        ],
-                        ignore_index=True
-                    )
 
         st.success(
             f"✅ Validación completada en {round(time.time() - start, 2)} segundos"
