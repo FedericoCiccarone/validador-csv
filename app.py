@@ -3,6 +3,57 @@ import os
 import time
 import difflib
 
+def validar_estructura_csv(archivo):
+
+    errores = []
+
+    archivo.seek(0)
+
+    lineas = (
+        archivo
+        .getvalue()
+        .decode(
+            "utf-8",
+            errors="ignore"
+        )
+        .splitlines()
+    )
+
+    if not lineas:
+        return errores
+
+    columnas_esperadas = (
+        len(
+            lineas[0].split(";")
+        )
+    )
+
+    for numero, linea in enumerate(
+        lineas[1:],
+        start=2
+    ):
+
+        columnas_actuales = (
+            len(
+                linea.split(";")
+            )
+        )
+
+        if columnas_actuales != columnas_esperadas:
+
+            errores.append({
+                "fila": numero,
+                "detalle_error":
+                (
+                    "Estructura CSV inválida; "
+                    "cantidad incorrecta de columnas"
+                )
+            })
+
+    archivo.seek(0)
+
+    return errores
+
 # 👇 IMPORTANTE PARA PORTABLE
 sys.path.append(os.path.join(os.path.dirname(__file__), "libs"))
 
@@ -55,6 +106,15 @@ if archivo:
 
     size_mb = archivo.size / (1024 * 1024)
 
+    # =============================
+    # 🔎 VALIDAR ESTRUCTURA CSV
+    # =============================
+
+    errores_csv = validar_estructura_csv(
+        archivo
+    )
+
+
     try:
 
         try:
@@ -74,7 +134,7 @@ if archivo:
                 sep=";",
                 encoding="latin-1",
                 engine="python",
-                on_bad_lines="skip"
+                on_bad_lines="error"
             )
 
             st.warning(
@@ -89,11 +149,20 @@ if archivo:
 
     except Exception as e:
 
-        st.error("❌ Error al leer archivo")
+        archivo.seek(0)
 
-        st.code(str(e))
+        df = pd.read_csv(
+            archivo,
+            sep=";",    
+            encoding="latin-1",
+            engine="python",
+            on_bad_lines="skip"
+        )
 
-        st.stop()
+        st.session_state[
+            "error_estructura_csv"
+        ] = str(e)  
+
 
     # =============================
     # 🧹 LIMPIEZA COLUMNAS
@@ -431,7 +500,7 @@ if archivo:
                     encoding="latin-1",
                     engine="python",
                     chunksize=50000,
-                    on_bad_lines="skip"
+                    on_bad_lines="error"
                 )
 
                 resultados = []
@@ -502,6 +571,35 @@ if archivo:
                 df_validado, errores, warnings = validar_archivo(
                     df
                 )
+
+                # =============================
+                # 🔥 AGREGAR ERRORES CSV
+                # =============================
+
+                if "error_estructura_csv" in st.session_state:
+
+                    nueva_fila = {
+                        col: ""
+                        for col in df_validado.columns
+                    }
+
+                    nueva_fila["estado"] = "ERROR"
+
+                    nueva_fila["detalle_error"] = (
+                         "Archivo CSV con estructura inválida; "
+                         "posible fila incompleta, comillas abiertas "
+                         "o separadores incorrectos"
+                    )
+
+                    df_validado = pd.concat(
+                        [
+                            df_validado,
+                            pd.DataFrame(
+                                [nueva_fila]
+                            )
+                        ],
+                        ignore_index=True
+                    )
 
         st.success(
             f"✅ Validación completada en {round(time.time() - start, 2)} segundos"
