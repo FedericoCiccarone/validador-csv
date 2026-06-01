@@ -561,9 +561,42 @@ if "df_validado" in st.session_state:
 
         st.subheader("📊 Resultado (muestra)")
 
-        st.dataframe(
-            df_validado.head(500)
+        # =============================
+        # 🔥 PRIORIZAR ERRORES EN MUESTRA
+        # =============================
+
+        df_muestra = (
+            df_validado
+            .copy()
         )
+
+        if "estado" in df_muestra.columns:
+
+            df_muestra["_orden_error"] = (
+                df_muestra["estado"]
+                .apply(
+                    lambda x: 0
+                    if x == "ERROR"
+                    else 1
+                )
+            )
+
+            df_muestra = (
+                df_muestra
+                .sort_values(
+                    "_orden_error"
+                )
+                .drop(
+                    columns=[
+                        "_orden_error"
+                    ]
+                )
+            )
+
+        st.dataframe(
+            df_muestra.head(500)
+        )
+
 
         st.subheader("📊 Resumen")
 
