@@ -500,6 +500,39 @@ def validar_archivo(df):
 
 
     # =============================
+    # 🆔 VALIDAR ID DE PAGO
+    # =============================
+
+    if "ID de pago" in df.columns:
+
+        mask_id_pago = (
+            df["ID de pago"]
+            .isna()
+            |
+            df["ID de pago"]
+            .astype(str)
+            .str.strip()
+            .isin([
+                "",
+                "nan",
+                "None",
+                "<NA>"
+            ])
+        )
+
+        df.loc[
+            mask_id_pago,
+            "estado"
+        ] = "ERROR"
+
+        df.loc[
+            mask_id_pago,
+            "detalle_error"
+        ] += (
+            "ID de pago vacío; "
+        )
+
+    # =============================
     # 🧮 VALIDACIÓN CONTABLE
     # =============================
 
