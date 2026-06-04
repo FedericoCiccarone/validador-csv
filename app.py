@@ -670,12 +670,24 @@ if archivo:
                 # =============================
                 # 🧹 LIMPIEZA FINAL CSV
                 # =============================
+                 # 🔥 eliminar duplicadas antes de validar
+                df = df.loc[
+                    :,
+                    ~df.columns.duplicated()
+                ]
+
+
                 for col in df.columns:
 
-                    if df[col].dtype == "object":
+                    columna = df[col]
+
+                    if hasattr(
+                        columna,
+                        "dtype"
+                    ) and columna.dtype == "object":
 
                         df[col] = (
-                            df[col]
+                            columna
                             .map(
                                 lambda x:
                                 str(x)
