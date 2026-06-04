@@ -147,8 +147,8 @@ if archivo:
                 sep=";",
                 encoding="utf-8",
                 engine="python",
-                quoting=csv.QUOTE_NONE,
-                on_bad_lines="skip"
+                quotechar='"',
+                keep_default_na=False
 
             )
 
@@ -161,8 +161,8 @@ if archivo:
                 sep=";",
                 encoding="latin-1",
                 engine="python",
-                quoting=csv.QUOTE_NONE,
-                on_bad_lines="skip"
+                quotechar='"',
+                keep_default_na=False
             )
 
             st.warning(
