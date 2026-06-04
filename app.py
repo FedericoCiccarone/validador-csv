@@ -255,18 +255,27 @@ if archivo:
     ]
 
 
+    # 🔥 eliminar columnas duplicadas
+    df = df.loc[
+        :,
+        ~df.columns.duplicated()
+    ]
+
+
     for columna in df.columns:
 
-        df[columna] = (
-            df[columna]
-            .astype(str)
-            .str.replace(
-                '"',
-                '',
-                regex=False
+        if df[columna].dtype == "object":
+
+            df[columna] = (
+                df[columna]
+                .astype(str)
+                .str.replace(
+                    '"',
+                    '',
+                    regex=False
+                )
+                .str.strip()
             )
-            .str.strip()
-        )
 
     st.subheader("📄 Vista previa")
 
