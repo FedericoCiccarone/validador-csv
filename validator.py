@@ -56,18 +56,60 @@ def validar_archivo(df):
 
     df = df.copy()
 
+
     # 🔥 limpiar nombres columnas
     df.columns = (
         df.columns
         .astype(str)
+        .str.replace(
+            '"',
+            "",
+            regex=False
+        )
+        .str.replace(
+            "\r",
+            "",
+            regex=False
+        )
+        .str.replace(
+            "\n",
+            "",
+            regex=False
+        )
         .str.strip()
     )
+
 
     # 🔥 eliminar columnas duplicadas
     df = df.loc[
         :,
         ~df.columns.duplicated()
     ]
+
+
+    # 🔥 limpiar contenido de TODAS las celdas
+    for col in df.columns:
+
+        df[col] = (
+            df[col]
+            .astype(str)
+            .str.replace(
+                '"',
+                "",
+                regex=False
+            )
+            .str.replace(
+                "\r",
+                "",
+                regex=False
+            )
+            .str.replace(
+                "\n",
+                "",
+                regex=False
+            )
+            .str.strip()
+        )
 
     # =============================
     # 🔴 COLUMNAS OBLIGATORIAS
